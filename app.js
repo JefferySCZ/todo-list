@@ -1,8 +1,10 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const exphbs = require('express-handlebars')
-
+const Todo = require('./models/todo') // load todo model
 const app = express()
+
+
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -24,7 +26,10 @@ db.once('open', () => {
 //homepages
 
 app.get('/', (req, res) => {
-  res.render('index')
+  Todo.find() // get all data from Todo Model
+  .lean() //  change mongoose's model to clean JS data array
+  .then(todos => res.render('index', { todos })) // data send to index template
+  .catch(error => console.error(error))
 })
 
 app.listen(3000, () => {
